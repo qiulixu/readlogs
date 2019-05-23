@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/george518/PPGo_ApiAdmin/libs"
-	"github.com/george518/PPGo_ApiAdmin/utils"
+	"readlogs/libs"
+	"readlogs/utils"
 
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_ApiAdmin/models"
+	"readlogs/models"
 	cache "github.com/patrickmn/go-cache"
 )
 

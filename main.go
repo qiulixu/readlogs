@@ -3,11 +3,11 @@ package main
 import (
 	"time"
 
-	"github.com/george518/PPGo_ApiAdmin/models"
-	_ "github.com/george518/PPGo_ApiAdmin/routers"
+	"readlogs/models"
+	_ "readlogs/routers"
 
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_ApiAdmin/utils"
+	"readlogs/utils"
 	cache "github.com/patrickmn/go-cache"
 )
 

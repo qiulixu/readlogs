@@ -26,26 +26,26 @@ demo地址：http://apiadmin.haodaquan.com
 效果展示
 ----
 前端界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/index.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/index.png?raw=true "github")
 <br/><br/>
 
 登录界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/login.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/login.png?raw=true "github")
 <br/><br/>
 权限界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/auth.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/auth.png?raw=true "github")
 角色界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/role.png?raw=true "github")
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/role_add.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/role.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/role_add.png?raw=true "github")
 管理员界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/admin.png?raw=true "github")
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/admin_add.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/admin.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/admin_add.png?raw=true "github")
 
 API列表界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/api_list.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/api_list.png?raw=true "github")
 
 API新增界面<br/>
-![github](https://github.com/george518/PPGo_ApiAdmin/blob/master/static/img/demoImage/add_api.png?raw=true "github")
+![github](https://PPGo_ApiAdmin/blob/master/static/img/demoImage/add_api.png?raw=true "github")
 
 <br/><br/>
 

@@ -76,21 +76,3 @@ func (a *Admin) Update(fields ...string) error {
 	}
 	return nil
 }
-
-// func RoleAuthDelete(id int) (int64, error) {
-// 	query := orm.NewOrm().QueryTable(TableName("role_auth"))
-// 	return query.Filter("role_id", id).Delete()
-// }
-
-// func RoleAuthMultiAdd(ras []*RoleAuth) (n int, err error) {
-// 	query := orm.NewOrm().QueryTable(TableName("role_auth"))
-// 	i, _ := query.PrepareInsert()
-// 	for _, ra := range ras {
-// 		_, err := i.Insert(ra)
-// 		if err == nil {
-// 			n = n + 1
-// 		}
-// 	}
-// 	i.Close() // 别忘记关闭 statement
-// 	return n, err
-// }
