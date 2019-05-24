@@ -49,13 +49,6 @@ func Password(len int, pwdO string) (pwd string, salt string) {
 	return pwd, salt
 }
 
-// 生成32位MD5
-// func MD5(text string) string{
-//    ctx := md5.New()
-//    ctx.Write([]byte(text))
-//    return hex.EncodeToString(ctx.Sum(nil))
-// }
-
 //生成随机字符串
 func GetRandomString(lens int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
