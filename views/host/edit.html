@@ -1,61 +1,37 @@
 <div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
 <form class="layui-form" action="" method="post" >
     <div class="layui-form-item">
-        <label class="layui-form-label">登录账号</label>
+        <label class="layui-form-label">主机名称</label>
         <div class="layui-input-inline">
-            <input type="text" name="login_name" readonly id="login_name" lay-verify="required" autocomplete="off" placeholder="登录账号" class="layui-input" value="{{.admin.login_name}}">
+            <input type="text" name="name" id="name" lay-verify="name|required" autocomplete="off" placeholder="主机名称" class="layui-input" value="{{.host.name}}">
         </div>
-        <div class="layui-form-mid layui-word-aux">*登录不允许修改</div>
+        <div class="layui-form-mid layui-word-aux">*中文或数字或_,5-30位</div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">真实姓名</label>
+        <label class="layui-form-label">主机地址</label>
         <div class="layui-input-inline">
-            <input type="text" name="real_name" id="real_name" lay-verify="required" autocomplete="off" placeholder="真实姓名" class="layui-input" value="{{.admin.real_name}}">
+            <input type="text" name="host" id="host" lay-verify="host|required" autocomplete="off" placeholder="主机地址" class="layui-input" value="{{.host.host}}">
         </div>
         <div class="layui-form-mid layui-word-aux">*</div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">手机号码</label>
+        <label class="layui-form-label">主机账号</label>
         <div class="layui-input-inline">
-            <input type="text" name="phone" lay-verify="phone|required" autocomplete="off" placeholder="手机号码" class="layui-input" value="{{.admin.phone}}">
+            <input type="text" name="account" lay-verify="account|required" autocomplete="off" placeholder="主机账号" class="layui-input" value="{{.host.account}}">
         </div>
         <div class="layui-form-mid layui-word-aux">*</div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">电子邮箱</label>
+        <label class="layui-form-label">主机密码</label>
         <div class="layui-input-inline">
-            <input type="text" name="email" id="email" lay-verify="email" autocomplete="off" placeholder="电子邮箱" class="layui-input" value="{{.admin.email}}">
+            <input type="password" name="password" id="password" lay-verify="password" autocomplete="off" placeholder="主机密码" class="layui-input" value="">
         </div>
         <div class="layui-form-mid layui-word-aux">*</div>
     </div>
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">重置密码</label>
-        <div class="layui-input-inline">
-            <input type="radio" name="reset_pwd" value="1" title="重置">
-            <input type="radio" name="reset_pwd" value="2" title="不重置" checked>
-        </div>
-        <div class="layui-form-mid layui-word-aux">默认密码:george518</div>
-    </div>
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">选择角色</label>
-        <div class="layui-input-block">
-            {{range $k, $v := .role}}
-                <input type="checkbox" name="role_ids" lay-filter="role_ids" title="{{$v.role_name}}" value="{{$v.id}}" {{if $v.checked}}checked{{end}}>
-            {{end}}
-        </div>
-        <div class="layui-form-mid layui-word-aux">*</div>
-    </div>
-
-
-    
-    <input type="hidden" id="roleids" name="roleids" value="{{.admin.role_ids}}">
-    <input type="hidden" id="id" name="id" value="{{.admin.id}}">
-    
+    <input type="hidden" id="id" name="id" value="{{.host.id}}">
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
@@ -71,26 +47,29 @@ var $;
     }).use(['form','element','layer','jquery'],function(){
         var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
         var $ = layui.jquery;
-        var role_ids_str = "{{.admin.role_ids}}"
-        var role_ids = role_ids_str.split(",");
 
-        form.on('checkbox(role_ids)', function(data){
-            if(data.elem.checked==true){
-                role_ids.push(data.value)
-            }else{
-                $.each(role_ids,function(index,item){  
-                    // index是索引值（即下标）   item是每次遍历得到的值；
-                    if(item==data.value){
-                        role_ids.splice(index,1);
-                    }
-                });
-            }
-            $("#roleids").val(role_ids.join(","));
+        //自定义验证规则
+        form.verify({
+            name: (value)=>{
+                if(value.length < 5 || value.length > 30){
+                    return '名称最少大于5个字符，并且少于30个字符';
+                }
+            }, account: (value)=>{
+                if(value.length > 30){
+                    return '账号不要超过30个字符';
+                }
+            },
+            password: (value)=>{
+                if(value.length > 40){
+                    return '密码不要超过40个字符';
+                }
+            },
+            host:[ /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/,'主机地址格式不正确']
         });
 
-        form.on('submit(sub)', function(data){
+        form.on('submit(sub)', (data)=>{
             var form_data = $("form").serialize();
-            $.post('{{urlfor "AdminController.AjaxSave"}}', form_data, function (out) {
+            $.post('{{urlfor "HostController.AjaxSave"}}', form_data, function (out) {
                 if (out.status == 0) {
                     layer.msg("操作成功",{icon: 1},function () {
                         window.location.reload()

@@ -9,11 +9,9 @@ package controllers
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
-	"readlogs/libs"
 	"github.com/astaxie/beego"
 	"readlogs/models"
 )
@@ -36,115 +34,81 @@ func (self *HostController) Edit() {
 	self.Data["pageTitle"] = "编辑主机"
 
 	id, _ := self.GetInt("id", 0)
-	Admin, _ := models.AdminGetById(id)
+	host, _ := models.HostGetById(id)
 	row := make(map[string]interface{})
-	row["id"] = Admin.Id
-	row["login_name"] = Admin.LoginName
-	row["real_name"] = Admin.RealName
-	row["phone"] = Admin.Phone
-	row["email"] = Admin.Email
-	row["role_ids"] = Admin.RoleIds
-	self.Data["admin"] = row
-
-	role_ids := strings.Split(Admin.RoleIds, ",")
-
-	filters := make([]interface{}, 0)
-	filters = append(filters, "status", 1)
-	result, _ := models.RoleGetList(1, 1000, filters...)
-	list := make([]map[string]interface{}, len(result))
-	for k, v := range result {
-		row := make(map[string]interface{})
-		row["checked"] = 0
-		for i := 0; i < len(role_ids); i++ {
-			role_id, _ := strconv.Atoi(role_ids[i])
-			if role_id == v.Id {
-				row["checked"] = 1
-			}
-			fmt.Println(role_ids[i])
-		}
-		row["id"] = v.Id
-		row["role_name"] = v.RoleName
-		list[k] = row
-	}
-	self.Data["role"] = list
+	row["id"] = host.Id
+	row["name"] = host.Name
+	row["host"] = host.Host
+	row["account"] = host.Account
+	row["password"] = host.Password
+	self.Data["host"] = row
 	self.display()
 }
 
 func (self *HostController) AjaxSave() {
-	Admin_id, _ := self.GetInt("id")
-	if Admin_id == 0 {
-		Admin := new(models.Admin)
-		Admin.LoginName = strings.TrimSpace(self.GetString("login_name"))
-		Admin.RealName = strings.TrimSpace(self.GetString("real_name"))
-		Admin.Phone = strings.TrimSpace(self.GetString("phone"))
-		Admin.Email = strings.TrimSpace(self.GetString("email"))
-		Admin.RoleIds = strings.TrimSpace(self.GetString("roleids"))
-		Admin.UpdateTime = time.Now().Unix()
-		Admin.UpdateId = self.userId
-		Admin.Status = 1
+	//获取用户id
+	Host_id, _ := self.GetInt("id")
+	if Host_id == 0 {
+		Host := new(models.Host)
+		Host.Name = strings.TrimSpace(self.GetString("name"))
+		Host.Host = strings.TrimSpace(self.GetString("host"))
+		Host.Account = strings.TrimSpace(self.GetString("account"))
+		Host.Password = strings.TrimSpace(self.GetString("password"))
+		Host.UpdateTime = time.Now().Unix()
+		Host.CreateTime = time.Now().Unix()
+		Host.CreateId = self.userId
+		Host.Status = 1
 
-		// 检查登录名是否已经存在
-		_, err := models.AdminGetByName(Admin.LoginName)
+		// 检测主机是否已存在
+		_, err := models.HostGetByName(Host.Host)
 
 		if err == nil {
-			self.ajaxMsg("登录名已经存在", MSG_ERR)
+			self.ajaxMsg("主机已经存在", MSG_ERR)
 		}
 		//新增
-		pwd, salt := libs.Password(4, "")
-		Admin.Password = pwd
-		Admin.Salt = salt
-		Admin.CreateTime = time.Now().Unix()
-		Admin.CreateId = self.userId
-		if _, err := models.AdminAdd(Admin); err != nil {
+
+		Host.UpdateId = self.userId
+		if _, err := models.HostAdd(Host); err != nil {
 			self.ajaxMsg(err.Error(), MSG_ERR)
 		}
 		self.ajaxMsg("", MSG_OK)
 	}
 
-	Admin, _ := models.AdminGetById(Admin_id)
+	Host, _ := models.HostGetById(Host_id)
 	//修改
-	Admin.Id = Admin_id
-	Admin.UpdateTime = time.Now().Unix()
-	Admin.UpdateId = self.userId
-	Admin.LoginName = strings.TrimSpace(self.GetString("login_name"))
-	Admin.RealName = strings.TrimSpace(self.GetString("real_name"))
-	Admin.Phone = strings.TrimSpace(self.GetString("phone"))
-	Admin.Email = strings.TrimSpace(self.GetString("email"))
-	Admin.RoleIds = strings.TrimSpace(self.GetString("roleids"))
-	Admin.UpdateTime = time.Now().Unix()
-	Admin.UpdateId = self.userId
-	Admin.Status = 1
-
-	resetPwd, _ := self.GetInt("reset_pwd")
-	if resetPwd == 1 {
-		pwd, salt := libs.Password(4, "")
-		Admin.Password = pwd
-		Admin.Salt = salt
+	Host.Id = Host_id
+	Host.UpdateTime = time.Now().Unix()
+	Host.UpdateId = self.userId
+	Host.Name = strings.TrimSpace(self.GetString("name"))
+	Host.Host = strings.TrimSpace(self.GetString("host"))
+	Host.Account = strings.TrimSpace(self.GetString("account"))
+	if strings.TrimSpace(self.GetString("password")) != ""{
+		Host.Password = strings.TrimSpace(self.GetString("password"))
 	}
-	if err := Admin.Update(); err != nil {
+	Host.UpdateTime = time.Now().Unix()
+	Host.UpdateId = self.userId
+	Host.Status = 1
+	if err := Host.Update(); err != nil {
 		self.ajaxMsg(err.Error(), MSG_ERR)
 	}
-	self.ajaxMsg(strconv.Itoa(resetPwd), MSG_OK)
+	self.ajaxMsg(0, MSG_OK)
 }
 
 func (self *HostController) AjaxDel() {
 
-	Admin_id, _ := self.GetInt("id")
+	hostId, _ := self.GetInt("id")
 	status := strings.TrimSpace(self.GetString("status"))
-	if Admin_id == 1 {
-		self.ajaxMsg("超级管理员不允许操作", MSG_ERR)
-	}
 
-	Admin_status := 0
+	hostStatus := 0
 	if status == "enable" {
-		Admin_status = 1
+		hostStatus = 1
 	}
-	Admin, _ := models.AdminGetById(Admin_id)
-	Admin.UpdateTime = time.Now().Unix()
-	Admin.Status = Admin_status
-	Admin.Id = Admin_id
 
-	if err := Admin.Update(); err != nil {
+	host, _ := models.HostGetById(hostId)
+	host.UpdateTime = time.Now().Unix()
+	host.Status = hostStatus
+	host.Id = hostId
+	if err := host.Update(); err != nil {
 		self.ajaxMsg(err.Error(), MSG_ERR)
 	}
 	self.ajaxMsg("操作成功", MSG_OK)
@@ -172,7 +136,8 @@ func (self *HostController) Table() {
 	filters := make([]interface{}, 0)
 	//
 	if realName != "" {
-		filters = append(filters, "real_name__icontains", realName)
+		//查询主机
+		filters = append(filters, "host", realName)
 	}
 	result, count := models.HostGetList(page, self.pageSize, filters...)
 	fmt.Println(result)
@@ -183,10 +148,11 @@ func (self *HostController) Table() {
 		row["name"] = v.Name
 		row["host"] = v.Host
 		row["account"] = v.Account
-		row["password"] = v.Password
+		row["password"] = "********"
 		row["create_time"] = beego.Date(time.Unix(v.CreateTime, 0), "Y-m-d H:i:s")
 		row["update_time"] = beego.Date(time.Unix(v.UpdateTime, 0), "Y-m-d H:i:s")
 		row["status"] = v.Status
+		row["status_text"] = StatusText[v.Status]
 		list[k] = row
 	}
 	self.ajaxList("成功", MSG_OK, count, list)

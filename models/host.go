@@ -18,6 +18,9 @@ type Host struct {
 	Account    string
 	Password   string
 	Status     int
+	ConnStatus int
+	UpdateId   int
+	CreateId   int
 	CreateTime int64
 	UpdateTime int64
 }

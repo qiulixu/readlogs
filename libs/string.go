@@ -41,7 +41,7 @@ func IsEmail(b []byte) bool {
 
 func Password(len int, pwdO string) (pwd string, salt string) {
 	salt = GetRandomString(4)
-	defaultPwd := "george518"
+	defaultPwd := "123456"
 	if pwdO != "" {
 		defaultPwd = pwdO
 	}
