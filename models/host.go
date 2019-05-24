@@ -57,6 +57,19 @@ func HostGetList(page, pageSize int, filters ...interface{}) ([]*Host, int64) {
 	return list, total
 }
 
+func HostGetListAll(filters ...interface{}) ([]*Host,error) {
+	list := make([]*Host, 0)
+	query := orm.NewOrm().QueryTable(TableName("uc_host"))
+	if len(filters) > 0 {
+		l := len(filters)
+		for k := 0; k < l; k += 2 {
+			query = query.Filter(filters[k].(string), filters[k+1])
+		}
+	}
+	_, err := query.OrderBy("-id").All(&list)
+	return list, err
+}
+
 func HostGetById(id int) (*Host, error) {
 	r := new(Host)
 	err := orm.NewOrm().QueryTable(TableName("uc_host")).Filter("id", id).One(r)

@@ -3,16 +3,16 @@ package main
 import (
 	"time"
 
-	"readlogs/models"
 	_ "readlogs/routers"
 
+	_"readlogs/models"
 	"github.com/astaxie/beego"
+	"github.com/patrickmn/go-cache"
+	_ "readlogs/cronTable"
 	"readlogs/utils"
-	cache "github.com/patrickmn/go-cache"
 )
 
 func main() {
-	models.Init()
 	utils.Che = cache.New(60*time.Minute, 120*time.Minute)
 	beego.Run()
 }

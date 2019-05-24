@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/PPGo_ApiAdmin.iml" filepath="$PROJECT_DIR$/.idea/PPGo_ApiAdmin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/readlogs.iml" filepath="$PROJECT_DIR$/.idea/readlogs.iml" />
     </modules>
   </component>
 </project>

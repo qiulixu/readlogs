@@ -8,7 +8,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -130,7 +129,9 @@ func (self *HostController) Table() {
 	StatusText := make(map[int]string)
 	StatusText[0] = "<font color='red'>禁用</font>"
 	StatusText[1] = "正常"
-
+	ConnStatusText := make(map[int]string)
+	ConnStatusText[0] = "<font color='red'>失败</font>"
+	ConnStatusText[1] = "正常"
 	self.pageSize = limit
 	//查询条件
 	filters := make([]interface{}, 0)
@@ -140,7 +141,6 @@ func (self *HostController) Table() {
 		filters = append(filters, "host", realName)
 	}
 	result, count := models.HostGetList(page, self.pageSize, filters...)
-	fmt.Println(result)
 	list := make([]map[string]interface{}, len(result))
 	for k, v := range result {
 		row := make(map[string]interface{})
@@ -153,6 +153,8 @@ func (self *HostController) Table() {
 		row["update_time"] = beego.Date(time.Unix(v.UpdateTime, 0), "Y-m-d H:i:s")
 		row["status"] = v.Status
 		row["status_text"] = StatusText[v.Status]
+		row["conn_status"] = v.ConnStatus
+		row["conn_status_text"] = ConnStatusText[v.ConnStatus]
 		list[k] = row
 	}
 	self.ajaxList("成功", MSG_OK, count, list)

@@ -16,7 +16,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Init() {
+func init() {
 	dbhost := beego.AppConfig.String("db.host")
 	dbport := beego.AppConfig.String("db.port")
 	dbuser := beego.AppConfig.String("db.user")
@@ -37,7 +37,7 @@ func Init() {
 		new(Group), new(Env), new(Code), new(ApiSource), new(ApiDetail), new(ApiPublic), new(Template),new(Host))
 
 	if beego.AppConfig.String("runmode") == "dev" {
-		orm.Debug = true
+		orm.Debug = false
 	}
 }
 
