@@ -7,43 +7,40 @@
 ***********************************************/
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"github.com/astaxie/beego/orm"
+)
 
-type Host struct {
+type Project struct {
 	Id         int
 	Name 	   string
-	Host   	   string
-	Account    string
-	Password   string
 	Status     int
-	ConnStatus int
 	UpdateId   int
 	CreateId   int
 	CreateTime int64
 	UpdateTime int64
 }
-
-func (a *Host) TableName() string {
-	return TableName("uc_host")
+func (a *Project) TableName() string {
+	return TableName("uc_project")
 }
 
-func HostAdd(a *Host) (int64, error) {
+func ProjectAdd(a *Project) (int64, error) {
 	return orm.NewOrm().Insert(a)
 }
 
-func HostGetByName(loginName string) (*Host, error) {
-	a := new(Host)
-	err := orm.NewOrm().QueryTable(TableName("uc_host")).Filter("name", loginName).One(a)
+func ProjectGetByName(loginName string) (*Project, error) {
+	a := new(Project)
+	err := orm.NewOrm().QueryTable(TableName("uc_project")).Filter("name", loginName).One(a)
 	if err != nil {
 		return nil, err
 	}
 	return a, nil
 }
 
-func HostGetList(page, pageSize int, filters ...interface{}) ([]*Host, int64) {
+func ProjectGetList(page, pageSize int, filters ...interface{}) ([]*Project, int64) {
 	offset := (page - 1) * pageSize
-	list := make([]*Host, 0)
-	query := orm.NewOrm().QueryTable(TableName("uc_host"))
+	list := make([]*Project, 0)
+	query := orm.NewOrm().QueryTable(TableName("uc_project"))
 	if len(filters) > 0 {
 		l := len(filters)
 		for k := 0; k < l; k += 2 {
@@ -55,9 +52,9 @@ func HostGetList(page, pageSize int, filters ...interface{}) ([]*Host, int64) {
 	return list, total
 }
 
-func HostGetListAll(filters ...interface{}) ([]*Host,error) {
+func ProjectGetListAll(filters ...interface{}) ([]*Host,error) {
 	list := make([]*Host, 0)
-	query := orm.NewOrm().QueryTable(TableName("uc_host"))
+	query := orm.NewOrm().QueryTable(TableName("uc_project"))
 	if len(filters) > 0 {
 		l := len(filters)
 		for k := 0; k < l; k += 2 {
@@ -68,19 +65,18 @@ func HostGetListAll(filters ...interface{}) ([]*Host,error) {
 	return list, err
 }
 
-func HostGetById(id int) (*Host, error) {
-	r := new(Host)
-	err := orm.NewOrm().QueryTable(TableName("uc_host")).Filter("id", id).One(r)
+func ProjectGetById(id int) (*Project, error) {
+	r := new(Project)
+	err := orm.NewOrm().QueryTable(TableName("uc_project")).Filter("id", id).One(r)
 	if err != nil {
 		return nil, err
 	}
 	return r, nil
 }
 
-func (a *Host) Update(fields ...string) error {
+func (a *Project) Update(fields ...string) error {
 	if _, err := orm.NewOrm().Update(a, fields...); err != nil {
 		return err
 	}
 	return nil
 }
-

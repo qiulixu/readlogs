@@ -30,5 +30,7 @@ func init() {
 	beego.AutoRouter(&controllers.UserController{})
 	//主机列表
 	beego.AutoRouter(&controllers.HostController{})
+	//项目列表
+	beego.AutoRouter(&controllers.ProjectController{})
 
 }

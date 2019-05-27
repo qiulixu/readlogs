@@ -1,0 +1,101 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+<div style="margin: 10px 0px">
+        <blockquote class="layui-elem-quote">
+            说明：Fuzz
+        </blockquote>
+    </div>
+<form class="layui-form" action="" method="post" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">服务名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="name" lay-verify="name|required" autocomplete="off" placeholder="服务名称" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*中文或数字或_,5-30位</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">日志路径</label>
+        <div class="layui-input-inline">
+            <input type="text" name="path"  lay-verify="path|required" autocomplete="off" placeholder="日志路径" class="layui-input" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*请输入绝对路径</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">主机选择</label>
+        <div class="layui-input-block">
+            {{range $k, $v := .host}}
+                <input type="checkbox" name="role_ids" lay-filter="role_ids" title="{{$v.name}}" value="{{$v.id}}">
+            {{end}}
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+    <input type="hidden" value="" id="roleids" name="roleids">
+    
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</div>
+<script>
+var $;
+    layui.config({
+            base : "js/"
+    }).use(['form','element','layer','jquery'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+        var role_ids = [];
+        form.on('checkbox(role_ids)', function(data){
+            if(data.elem.checked==true){
+                role_ids.push(data.value)
+            }else{
+                $.each(role_ids,function(index,item){
+                    // index是索引值（即下标）   item是每次遍历得到的值；
+                    if(item==data.value){
+                        role_ids.splice(index,1);
+                    }
+                });
+            }
+            $("#roleids").val(role_ids.join(","));
+        });
+        //自定义验证规则
+        form.verify({
+            name: (value)=>{
+                if(value.length < 5 || value.length > 30){
+                    return '名称最少大于5个字符，并且少于30个字符';
+                }
+            }, account: (value)=>{
+                if(value.length > 30){
+                    return '账号不要超过30个字符';
+                }
+            },
+            password: (value)=>{
+            if(value.length > 40){
+                return '密码不要超过40个字符';
+            }
+        },
+            host:[ /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\:([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$/,'主机地址格式不正确']
+    });
+
+        form.on('submit(sub)', (data)=>{
+            var form_data = $("form").serialize();
+            $.post('{{urlfor "ProjectController.AjaxSave"}}', form_data, function (out) {
+                if (out.status == 0) {
+                    layer.msg("操作成功",{icon: 1},function () {
+                        window.location.reload()
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+      
+      //但是，如果你的HTML是动态生成的，自动渲染就会失效
+      //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+      form.render();
+}); 
+</script>

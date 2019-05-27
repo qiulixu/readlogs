@@ -5,7 +5,6 @@
 package fun
 
 import (
-	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"net"
@@ -26,7 +25,6 @@ func HeartbeatCheck()(session *sftp.Client,err error){
 	}
 	for _,v := range hostList {
 		session, err = ConnSftp(v.Account,v.Password,v.Host)
-		fmt.Println(err,v.Host)
 		//连接成功 1 连接失败 0
 		v.ConnStatus = 1
 		if err != nil{
