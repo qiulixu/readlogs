@@ -14,7 +14,9 @@ import (
 type Project struct {
 	Id         int
 	Name 	   string
+	Path	   string
 	Status     int
+	Host       string
 	UpdateId   int
 	CreateId   int
 	CreateTime int64
