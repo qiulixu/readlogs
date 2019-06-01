@@ -83,17 +83,60 @@ func ConnSftp(user, password, host string) (*sftp.Client, error) {
 // @auth  2019/4/8:11:00   Fuzz
 // @param   length	string   true    "要生成的字符长度"
 // @return  str      string   true    "生成指定长度后的字符串"
-func GetFile(project *models.Project)(data []map[string]string,err error){
+func GetFile(project *models.Project,hostId int)(data map[string]string,err error){
+	hostList,err := models.HostGetById(hostId)
+	if err != nil {
+		return
+	}
+	text,err := HostOpenFile(hostList.Account,hostList.Password,hostList.Host,project.Path)
+	if err != nil{
+		return
+	}
+	data = map[string]string{"log":string(text)}
+	return
+}
+
+// @title  获取目录
+// @description 获取目录
+// @auth  2019/4/8:11:00   Fuzz
+// @param   length	string   true    "获取平台"
+// @return  str      string   true    "获取目录中文件"
+func GetDir(project *models.Project)(data []map[string]interface{},err error){
 	hostList,err := models.HostGetListAll("id__in",strings.Split(project.Host,","))
 	if err != nil {
 		return
 	}
 	for _,v := range  hostList{
-		text,err := HostOpenFile(v.Account,v.Password,v.Host,project.Path)
+		dirList,err := HostListDir(v.Account,v.Password,v.Host,project.Path)
 		if err != nil{
 			fmt.Println(err)
 		}
-		data = append(data, map[string]string{ "name":v.Name,"host":v.Host,"log":string(text)})
+		data = append(data, map[string]interface{}{"name":v.Name,"host":v.Host,"dir_list":dirList,"host_id":v.Id})
+	}
+	return
+}
+
+// @title  获取远程文件
+// @description 获取远端服务器文件
+// @auth  2019/4/8:11:00   Mick
+// @param   user		string   true    "用户账号"
+// @param  	password   	string   true    "用户密码"
+// @param  	host    	string   true    "主机地址"
+// @param  	path    	string   true    "服务路径"
+// @return  data	    []byte   true    "路径内容"
+// @return  err    		error    true    "错误"
+func HostListDir(user, password, host,path string) (dirList []string,err error){
+	session, err := ConnSftp(user,password,host)
+	if err != nil{
+		return
+	}
+	//获取远端文件
+	fileInfo, err := session.ReadDir(path)
+	if err != nil {
+		return
+	}
+	for _,v := range fileInfo {
+		dirList = append(dirList,v.Name())
 	}
 	return
 }

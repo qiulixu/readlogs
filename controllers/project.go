@@ -85,12 +85,28 @@ func (self *ProjectController) Detail() {
 	id, _ := self.GetInt("id", 0)
 	project, _ := models.ProjectGetById(id)
 	//获取远程服务器文件
-	data,err := fun.GetFile(project)
+	data,err := fun.GetDir(project)
 	if err != nil{
 		fmt.Println(err)
 	}
-	self.Data["log"] = data
+	self.Data["dir_list"] = data
+	self.Data["project_id"] = id
 	self.display()
+}
+
+func (self *ProjectController) AjaxDetail() {
+	self.Data["pageTitle"] = "日志查看"
+	fileName := self.GetString("file_name")
+	hostId, _ := self.GetInt("host_id", 0)
+	projectId,_ := self.GetInt("project_id", 0)
+	project, _ := models.ProjectGetById(projectId)
+	project.Path += fileName
+	//获取远程服务器文件
+	data,err := fun.GetFile(project,hostId)
+	if err != nil{
+		self.ajaxMsg(err.Error(), MSG_ERR)
+	}
+	self.ajaxList(0, MSG_OK,0,data)
 }
 
 

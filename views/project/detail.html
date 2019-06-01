@@ -1,23 +1,56 @@
 <div class="layui-layout layui-layout-admin">
-    {{range $k, $v := .log}}
-    <pre class="layui-code" lay-title="name:{{$v.name}} ip:{{$v.host}}}" id="hostId" style="font-size: 17px">
-        {{$v.log}}}
-    </pre>
+    <div style="margin: 10px 0px">
+        <blockquote class="layui-elem-quote">
+            说明：Fuzz
+        </blockquote>
+    </div>
+    <form class="layui-form" action="" method="post" >
+    {{range $k, $v := .dir_list}}
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择文件</label>
+        <div class="layui-input-block">
+            <select name="interest"  lay-filter="interest">
+                {{range $kk, $vv := $v.dir_list}}
+                  <option value="{{$vv}},{{$v.host_id}}">{{$vv}}</option>
+                {{end}}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <pre class="layui-code" lay-title="name:{{$v.name}} ip:{{$v.host}}" id="{{$v.host_id}}" style="font-size: 17px">
+            请选择读取的文件
+        </pre>
+    </div>
     {{end}}
+    </form>
 </div>
 <script>
 var $;
     layui.config({
         base : "js/"
-    }).use(['code','layer','jquery'], function(){ //加载code模块
+    }).use(['form','code','layer','jquery'], function(){ //加载code模块
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
         var $ = layui.jquery;
         layui.code({
              skin: 'notepad' //如果要默认风格，不用设定该key。
             ,height:"1000px"
-            ,with:"60px"
             ,encode:true
-            ,about:false
+            ,about:true
         });
+        form.on('select(interest)',(data)=>{
+            file_name = data.value.split(",");
+            $.post('{{urlfor "ProjectController.AjaxDetail"}}', {"file_name":file_name[0],"host_id":file_name[1],"project_id":{{.project_id}}}, function (out) {
+                if (out.code == 0) {
+                    layer.msg("操作成功",{icon: 1},function () {
+                        $("#"+file_name[1]).text(out.data.log);
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+
     });
 
 
