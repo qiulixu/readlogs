@@ -7,7 +7,9 @@
 ***********************************************/
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"github.com/astaxie/beego/orm"
+)
 
 type Host struct {
 	Id         int
@@ -83,4 +85,3 @@ func (a *Host) Update(fields ...string) error {
 	}
 	return nil
 }
-

@@ -9,6 +9,7 @@ package controllers
 
 import (
 	"fmt"
+	"readlogs/fun"
 	"strconv"
 	"strings"
 	"time"
@@ -81,7 +82,14 @@ func (self *ProjectController) Edit() {
 
 func (self *ProjectController) Detail() {
 	self.Data["pageTitle"] = "日志查看"
-
+	id, _ := self.GetInt("id", 0)
+	project, _ := models.ProjectGetById(id)
+	//获取远程服务器文件
+	data,err := fun.GetFile(project)
+	if err != nil{
+		fmt.Println(err)
+	}
+	self.Data["log"] = data
 	self.display()
 }
 
@@ -178,6 +186,7 @@ func (self *ProjectController) Table() {
 		row := make(map[string]interface{})
 		row["id"] = v.Id
 		row["name"] = v.Name
+		row["path"] = v.Path
 		row["create_time"] = beego.Date(time.Unix(v.CreateTime, 0), "Y-m-d H:i:s")
 		row["update_time"] = beego.Date(time.Unix(v.UpdateTime, 0), "Y-m-d H:i:s")
 		row["status"] = v.Status

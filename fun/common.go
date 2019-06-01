@@ -5,10 +5,13 @@
 package fun
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"net"
 	"readlogs/models"
+	"strings"
 	"time"
 )
 
@@ -73,4 +76,59 @@ func ConnSftp(user, password, host string) (*sftp.Client, error) {
 	}
 
 	return sftpClient, nil
+}
+
+// @title  获取文件
+// @description 获取服务器数据文件
+// @auth  2019/4/8:11:00   Fuzz
+// @param   length	string   true    "要生成的字符长度"
+// @return  str      string   true    "生成指定长度后的字符串"
+func GetFile(project *models.Project)(data []map[string]string,err error){
+	hostList,err := models.HostGetListAll("id__in",strings.Split(project.Host,","))
+	if err != nil {
+		return
+	}
+	for _,v := range  hostList{
+		text,err := HostOpenFile(v.Account,v.Password,v.Host,project.Path)
+		if err != nil{
+			fmt.Println(err)
+		}
+		data = append(data, map[string]string{ "name":v.Name,"host":v.Host,"log":string(text)})
+	}
+	return
+}
+
+// @title  获取远程文件
+// @description 获取远端服务器文件
+// @auth  2019/4/8:11:00   Mick
+// @param   user		string   true    "用户账号"
+// @param  	password   	string   true    "用户密码"
+// @param  	host    	string   true    "主机地址"
+// @param  	path    	string   true    "服务路径"
+// @return  data	    []byte   true    "文件内容"
+// @return  err    		error    true    "错误"
+func HostOpenFile(user, password, host,path string) ([]byte,error){
+	buf := new(bytes.Buffer)
+	session, err := ConnSftp(user,password,host)
+	if err != nil{
+		return nil,err
+	}
+	//获取远端文件
+	srcFile, err := session.Open(path)
+	if err != nil {
+		return nil,err
+	}
+	_,err = buf.ReadFrom(srcFile)
+	if err != nil {
+		return nil,err
+	}
+	err = srcFile.Close()
+	if err != nil {
+		return nil,err
+	}
+	err = session.Close()
+	if err != nil {
+		return nil,err
+	}
+	return buf.Bytes(),err
 }
